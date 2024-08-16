@@ -213,4 +213,50 @@ impl Interface {
             }
         }
     }
+
+    pub(crate) fn process_mptcp(&mut self, current: &mut Self) {
+        if let (Some(des_ip), Some(cur_ip)) = (
+            self.base_iface_mut().ipv4.as_ref(),
+            current.base_iface_mut().ipv4.as_ref(),
+        ) {
+            if let (Some(des_ip_addrs), Some(cur_ip_addrs)) =
+                (des_ip.addresses.as_ref(), cur_ip.addresses.as_ref())
+            {
+                des_ip_addrs.iter().for_each(|a| {
+                    if !a.is_auto() {
+                        return;
+                    }
+                });
+                cur_ip_addrs.iter().for_each(|a| {
+                    if !a.is_auto() {
+                        return;
+                    }
+                });
+            }
+        }
+
+        if let (Some(des_ip), Some(cur_ip)) = (
+            self.base_iface_mut().ipv6.as_ref(),
+            current.base_iface_mut().ipv6.as_ref(),
+        ) {
+            if let (Some(des_ip_addrs), Some(cur_ip_addrs)) =
+                (des_ip.addresses.as_ref(), cur_ip.addresses.as_ref())
+            {
+                des_ip_addrs.iter().for_each(|a| {
+                    if !a.is_auto() {
+                        return;
+                    }
+                });
+                cur_ip_addrs.iter().for_each(|a| {
+                    if !a.is_auto() {
+                        return;
+                    }
+                });
+            }
+        }
+
+        log::info!("Not verifying interface.mptcp because no static addresses are present");
+        self.base_iface_mut().mptcp = None;
+        current.base_iface_mut().mptcp = None;
+    }
 }
